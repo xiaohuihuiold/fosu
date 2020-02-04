@@ -1,4 +1,5 @@
 import 'package:fosu/common/map/storyboard_info.dart';
+import 'package:fosu/common/util/image_util.dart';
 
 class OSUMapInfo {
   /// 地图目录
@@ -18,6 +19,30 @@ class OSUMapInfo {
 
   /// 故事板
   OSBEvents events;
+
+  /// 初始化加载图像
+  Future<Null> initImages() async {
+    await _initImages(events?.backgrounds);
+    await _initImages(events?.fails);
+    await _initImages(events?.passes);
+    await _initImages(events?.foregrounds);
+  }
+
+  Future<Null> _initImages(List<Sprite> sprites) async {
+    if (sprites == null) {
+      return;
+    }
+    for (int i = 0; i < sprites.length; i++) {
+      Sprite sprite = sprites[i];
+      if (sprite is AnimationSprite) {
+        sprite.images = List();
+        for (int j = 0; j < sprite.paths?.length ?? 0; ++j) {
+          String path = sprite.paths[j];
+          sprite.images.add(await ImageUtil.loadImage(path));
+        }
+      }
+    }
+  }
 }
 
 /// 样本集

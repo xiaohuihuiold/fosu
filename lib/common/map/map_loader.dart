@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:fosu/common/map/map_info.dart';
 import 'package:fosu/common/map/storyboard_event.dart';
+import 'package:fosu/common/util/image_util.dart';
 
 import 'storyboard_info.dart';
 
@@ -20,18 +21,22 @@ class OSUMapLoader {
 
   /// 通过isolate加载谱面
   static Future<OSUMapLoader> loadFromPath(String path) async {
+    ImageUtil.clearImage();
     ReceivePort receivePort = ReceivePort();
-    await Isolate.spawn((List params) async {
-      SendPort sendPort = params[0];
-      String path = params[1];
-      OSUMapLoader osuMapLoader = OSUMapLoader();
-      await osuMapLoader._load(path);
-      await osuMapLoader._loadOSB();
-      sendPort.send(osuMapLoader);
-    }, [receivePort.sendPort, path]);
+    await Isolate.spawn(_loadFromPath, [receivePort.sendPort, path]);
     OSUMapLoader osuMapLoader = await receivePort.first;
     receivePort.close();
+    osuMapLoader?.mapInfo?.initImages();
     return osuMapLoader;
+  }
+
+  static Future<Null> _loadFromPath(List params) async {
+    SendPort sendPort = params[0];
+    String path = params[1];
+    OSUMapLoader osuMapLoader = OSUMapLoader();
+    await osuMapLoader._load(path);
+    await osuMapLoader._loadOSB();
+    sendPort.send(osuMapLoader);
   }
 
   /// 从路径加载
@@ -174,7 +179,6 @@ class _OSUStoryBoardLoader {
 
   /// 开始解析
   Future<Null> parse() async {
-    _imageCache.clear();
     if (mapInfo == null || lines == null) {
       return;
     }
@@ -353,11 +357,10 @@ class _OSUStoryBoardLoader {
       String fileFormat = sprite.fileName.substring(
           sprite.fileName.lastIndexOf('.') + 1, sprite.fileName.length);
       for (int i = 0; i < sprite.frameCount; i++) {
-        sprite.images
-            .add(await _loadImage('${mapInfo.path}/$fileName$i.$fileFormat'));
+        sprite.paths.add('${mapInfo.path}/$fileName$i.$fileFormat');
       }
     } else {
-      sprite.image = await _loadImage('${mapInfo.path}/${sprite.fileName}');
+      sprite.path = '${mapInfo.path}/${sprite.fileName}';
     }
     i = await _parseEvents(i + 1, sprite: sprite);
 
@@ -631,26 +634,6 @@ class _OSUStoryBoardLoader {
       triggerEvent.events.add(spriteEvent);
     }
     return i;
-  }
-
-  /// 加载图片
-  final Map<String, Image> _imageCache = Map();
-
-  Future<Image> _loadImage(String path) async {
-    Image image = _imageCache[path.trim()];
-    if (image != null) {
-      return image;
-    }
-    File file = File(path);
-    if (!(await file.exists())) {
-      return null;
-    }
-    Codec codec = await instantiateImageCodec(
-        file.readAsBytesSync().buffer.asUint8List());
-    FrameInfo frameInfo = await codec.getNextFrame();
-    image = frameInfo.image;
-    _imageCache[path.trim()] = image;
-    return image;
   }
 
   /// 判断是否是十六进制颜色

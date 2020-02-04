@@ -143,6 +143,7 @@ class Sprite {
 
   /// 图片
   Image image;
+  String path;
 
   /// 偏移
   Offset _offset;
@@ -474,6 +475,7 @@ class AnimationSprite extends Sprite {
 
   /// 图片
   List<Image> images;
+  List<String> paths;
 
   @override
   Image getImage(int time) {
