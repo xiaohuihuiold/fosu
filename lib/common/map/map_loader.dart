@@ -26,7 +26,6 @@ class OSUMapLoader {
     await Isolate.spawn(_loadFromPath, [receivePort.sendPort, path]);
     OSUMapLoader osuMapLoader = await receivePort.first;
     receivePort.close();
-    osuMapLoader?.mapInfo?.initImages();
     return osuMapLoader;
   }
 
@@ -37,6 +36,10 @@ class OSUMapLoader {
     await osuMapLoader._load(path);
     await osuMapLoader._loadOSB();
     sendPort.send(osuMapLoader);
+  }
+
+  Future<Null> initImages() async {
+    await mapInfo?.initImages();
   }
 
   /// 从路径加载

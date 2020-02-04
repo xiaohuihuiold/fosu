@@ -16,6 +16,7 @@ class HomeScene extends GameScene {
           child: Container(
             width: circleRadius,
             height: circleRadius,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.grey,
               border: Border.all(
@@ -23,6 +24,14 @@ class HomeScene extends GameScene {
                 width: circleRadius / 20.0,
               ),
               borderRadius: BorderRadius.circular(circleRadius / 2.0),
+            ),
+            child: Text(
+              'TOUCH',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 52.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

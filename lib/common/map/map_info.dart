@@ -40,6 +40,8 @@ class OSUMapInfo {
           String path = sprite.paths[j];
           sprite.images.add(await ImageUtil.loadImage(path));
         }
+      }else{
+        sprite.image=await ImageUtil.loadImage(sprite.path);
       }
     }
   }
