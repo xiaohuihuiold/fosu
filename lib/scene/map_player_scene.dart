@@ -58,14 +58,14 @@ class MapPlayerScene extends GameScene {
           _canUpdate = false;
           break;
         case AudioPlayerState.PLAYING:
-          _canUpdate = true;
+          Future.delayed(const Duration(seconds: 1))
+              .then((value) => _canUpdate = true);
           break;
         case AudioPlayerState.PAUSED:
           _canUpdate = false;
           break;
         case AudioPlayerState.COMPLETED:
           _canUpdate = false;
-          removeScene();
           break;
       }
     });
