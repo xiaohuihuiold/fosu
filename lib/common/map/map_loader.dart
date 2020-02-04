@@ -191,7 +191,7 @@ class _OSUStoryBoardLoader {
       String line = lines[i];
       switch (line.trim()) {
         case '//Background and Video events':
-          i = await _parseBackground(i + 1);
+          i = await _parseBackground(i + 1, events.backgrounds);
           break;
         case '//Break Periods':
           i = await _parseBreakPeriods(i + 1);
@@ -217,7 +217,7 @@ class _OSUStoryBoardLoader {
   }
 
   /// 解析背景
-  Future<int> _parseBackground(int i) async {
+  Future<int> _parseBackground(int i, List<Sprite> sprites) async {
     OSBBackground osbBackground = OSBBackground();
     for (; i < lines.length; i++) {
       String line = lines[i];
@@ -241,6 +241,24 @@ class _OSUStoryBoardLoader {
       break;
     }
     mapInfo.events.background = osbBackground;
+/*
+    // 背景转sprite
+    Sprite sprite = Sprite();
+    sprite.position = osbBackground.offset;
+    sprite.path = '${mapInfo.path}/${osbBackground.fileName}';
+    sprite.origin = SpriteOrigin.Centre;
+    sprite.startTime = 0;
+    sprite.endTime = 1 << 32;
+    sprite.events = [
+      FadeEvent()
+        ..startTime = 0
+        ..endTime = 1 << 32
+        ..startOpacity = 1.0
+        ..endOpacity = 1.0
+        ..easing = 0
+    ];
+
+    sprites.insert(0, sprite);*/
     return i;
   }
 
@@ -355,6 +373,7 @@ class _OSUStoryBoardLoader {
     sprite.position = position;
     if (sprite is AnimationSprite) {
       sprite.images = List();
+      sprite.paths = List();
       String fileName =
           sprite.fileName.substring(0, sprite.fileName.lastIndexOf('.'));
       String fileFormat = sprite.fileName.substring(

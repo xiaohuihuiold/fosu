@@ -96,11 +96,6 @@ class MapPlayerScene extends GameScene {
       updateState();
       _play();
     });
-    addGameObject(createObject([
-      PositionComponent(),
-      SizeComponent(size: size),
-      SpriteComponent(),
-    ]));
     addGameObject(
       createObject([
         PositionComponent(),
@@ -159,7 +154,7 @@ class MapPlayerScene extends GameScene {
               color: Colors.grey.withOpacity(0.2),
             ),
             child: Slider(
-              value: _currentTime.toDouble(),
+              value: _currentTime > _duration ? 0.0 : _currentTime.toDouble(),
               min: 0.0,
               max: _duration.toDouble(),
               onChanged: (time) {
