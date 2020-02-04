@@ -10,6 +10,9 @@ class SplashScene extends GameScene {
   /// 跳转定时器
   Timer _timer;
 
+  /// 是否显示
+  bool _isShow = false;
+
   @override
   void onAttach(Moengine moengine) {
     super.onAttach(moengine);
@@ -27,10 +30,18 @@ class SplashScene extends GameScene {
 
   @override
   List<Widget> onBuildUi(BuildContext context) {
+    if (!_isShow) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _isShow = true;
+        updateState();
+      });
+    }
     return [
       Container(
         alignment: Alignment.center,
-        child: Center(
+        child: AnimatedOpacity(
+          opacity: _isShow ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 1000),
           child: Text(
             'FOSU',
             style: TextStyle(

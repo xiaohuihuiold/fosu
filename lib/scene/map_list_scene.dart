@@ -10,9 +10,7 @@ class MapListScene extends GameScene {
         child: RaisedButton(
           child: const Text('测试播放'),
           onPressed: () {
-            sceneModule.loadScene(MapPlayerScene()).then((value) {
-              print('MapListScene: $value');
-            });
+            sceneModule.loadScene(MapPlayerScene());
           },
         ),
       ),
